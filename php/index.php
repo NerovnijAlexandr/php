@@ -1,62 +1,41 @@
 <?php
 
-	$filename = "book.csv";
+	if($_SERVER['REQUEST_METHOD'] == 'POST') {
+		echo '<pre>';
+		var_dump($_FILES);
+		echo '</pre>';
 
-	mkdir('dir', 777);
+		$errors = [];
+		$limit = 500000;
+		$image = $_FILES['image'];
+		if($image['size'] > $limit) {
+			$errors[] = "Превышен размер файла";
+		}
 
-	// copy($filename, 'pdo/'.$filename);
+		if($image['type'] !== 'image/png') {
+			$errors[] = "Неверный формат фала";
+		}
 
-	// $f = fopen($filename, 'r');
-
-	// while($data = fgetcsv($f, 1000, ';'))
-	// {
-	// 	var_dump($data);
-	// }
+		if(count($errors)) {
+			die;
+		}
 
 
-	// $lines = file($filename);
-
-	// foreach($lines as $line) {
-	// 	echo $line.'</br>';
-	// }
-
-	// var_dump($lines);
-
-	// $info = stat($filename);
-
-	// echo '<pre>';
-	// var_dump($info[7]);
-	// echo '</pre>';
-
-	// echo file_get_contents($filename);
-
-	// $fp = fopen($filename, "r");
-
-	// $i = 1;
-	// while(!feof($fp)) {
-	// 	$line = (int)fgets($fp, 999);
-	// 	echo $line.'<br>';
-	// 	if($line == 88) {
-	// 		echo 'line '.$i;
-	// 		break;
-	// 	}
-	// 	$i++;
-	// }
-
-	if($fp) {
-		fclose($fp);
+		if(isset($image)) {
+			if(0 === $image['error']) {
+				move_uploaded_file(
+					$image['tmp_name'],
+					__DIR__."/images/{$image['name']}"
+				);
+			}
+		}
 	}
-
-	// if($fp) {
-	// 	fwrite($fp, 'Краматорск\nСлавянск\nДонецк');
-	// }
-
-	// // $data = fread($fp, filesize($filename));
-
-
-
-	// var_dump($data);
-
+	
 	
 ?>
 
+<form action="" method="post" enctype="multipart/form-data">
+	<input type="file" name="image">
+	<!-- <input type="file" name="images[]" multiple> -->
+	<button type="submit">Upload</button>
+</form>
